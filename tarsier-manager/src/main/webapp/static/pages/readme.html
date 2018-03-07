@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="cache-control" content="no-cache" />
+    <title>收集器安装说明</title>
+</head>
+<body>
+<h1>普通方式运行收集器 </h1>
+<h2>一键安装：</h2>
+下载脚本<a href="/tarsier-manager/collect/shell">deploy_collect</a>; 可在任意目录下执行【推荐用户家目录】，执行成功后显示"add crontab success"。
+<br>
+<h2>Step2: 添加或更新配置文件 </h2>
+<a href="http://10.214.129.129:5601">登录 </a><label>--> Management --> 收集器配置 --> 新建主机</label>
+<br>
+<br>
+<h1>Docker 的方式运行收集器 </h1>
+<h2>Step1：添加及更新配置文件</h2>
+<a href="http://10.214.129.129:5601">登录 </a><label>--> Management --> 收集器配置 --> 新建主机</label>
+<h2>Step2：下载收集器Image</h2>
+<label>docker pull 10.199.192.16/tarsier/collect:prod</label>
+<h2>Step3：运行Docker</h2>
+<label>docker run -it -e COLLECT_ID=</label><font color="red">${配置项ID}</font><label> -p 9600:9600 -v ~/data:/root/collect/data 10.199.192.16/tarsier/collect:prod</label>
+<br>
+<label>红色部分为配置文件ID</label>
+<br>
+<br>
+</body>
+</html>

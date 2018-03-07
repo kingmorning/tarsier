@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>    
+<!DOCTYPE mapper    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace的值就是dao接口的完整路劲，就这个demo而言namespace 就是userDao.java的完整路劲 -->
+<mapper namespace="com.tarsier.manager.mapper.RuleMapper">
+	<!-- 这里的id就是接口中方法的名称 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.tarsier.util.Rule">
+		INSERT INTO `tarsier`.`rule`
+		(
+		`name`,
+		`project_name`,
+		`channel`,
+		`filter`,
+		`group`,
+		`recover`,
+		`timewin`,
+		`trigger`,
+		`interval`,
+		`type`,
+		`persons`,
+		`mobiles`,
+		`emails`,
+		`date_range`,
+		`time_range`,
+		`weekly`,
+		`monthly`,
+		`disabled`,
+		`create_time`,
+		`user_name`,
+		`template`
+		)
+		VALUES
+		(#{name},
+		#{projectName},
+		#{channel},
+		#{filter},
+		#{group},
+		#{recover},
+		#{timewin},
+		#{trigger},
+		#{interval},
+		#{type},
+		#{persons},
+		#{mobiles},
+		#{emails},
+		#{dateRange},
+		#{timeRange},
+		#{weekly},
+		#{monthly},
+		#{disabled},
+		#{createTime},
+		#{userName},
+		#{template}
+		);
+	</insert>
+	<update id="update"
+		parameterType="com.tarsier.util.Rule">
+		UPDATE `tarsier`.`rule`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="name != null">`name` = #{name},</if>
+			<if test="projectName != null">`project_name` = #{projectName},</if>
+			<if test="channel != null">`channel` = #{channel},</if>
+			<if test="filter != null">`filter` = #{filter},</if>
+			<if test="group != null">`group` = #{group},</if>
+			<if test="timewin != null">`timewin` = #{timewin},</if>
+			<if test="trigger != null">`trigger` = #{trigger},</if>
+			<if test="recover != null">`recover` = #{recover},</if>
+			<if test="type != null">`type` = #{type},</if>
+			<if test="interval != null">`interval` = #{interval},</if>
+			<if test="persons != null">`persons` = #{persons},</if>
+			<if test="mobiles != null">`mobiles` = #{mobiles},</if>
+			<if test="emails != null">`emails` = #{emails},</if>
+			<if test="dateRange != null">`date_range` = #{dateRange},</if>
+			<if test="timeRange != null">`time_range` = #{timeRange},</if>
+			<if test="weekly != null">`weekly` = #{weekly},</if>
+			<if test="monthly != null">`monthly` = #{monthly},</if>
+			<if test="disabled != null">`disabled`= #{disabled},</if>
+			<if test="ip != null">`ip`= #{ip},</if>
+			<if test="template != null">`template`= #{template},</if>
+		</trim>
+		WHERE id=#{id}
+	</update>
+	<select id="select" resultType="com.tarsier.util.Rule">
+		select * from `tarsier`.`rule`
+		where 1=1
+		<if test="name != null"> and `name` = #{name}</if>
+		<if test="projectName != null"> and `project_name` = #{projectName}</if>
+		<if test="channel != null"> and `channel` = #{channel}</if>
+		<if test="filter != null"> and `filter` like concat('%',#{filter},'%')</if>
+		<if test="group != null"> and `group` = #{group}</if>
+		<if test="trigger != null"> and `trigger` like concat('%',#{trigger},'%')</if>
+		<if test="interval != null"> and `interval` = #{interval}</if>
+		<if test="persons != null"> and `persons` like concat('%',#{persons},'%')</if>
+		<if test="mobiles != null"> and `mobiles` like concat('%',#{mobiles},'%')</if>
+		<if test="disabled != null"> and `disabled`=#{disabled}</if>
+		<if test="userName != null"> and `user_name`=#{userName}</if>
+		<if test="ip != null"> and `ip`=#{ip}</if>
+		order by id desc
+	</select>
+</mapper>

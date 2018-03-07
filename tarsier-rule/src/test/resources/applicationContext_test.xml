@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+               		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                   	http://www.springframework.org/schema/context
+       				http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       				http://www.springframework.org/schema/tx 
+       				http://www.springframework.org/schema/tx/spring-tx-3.0.xsd   
+     				http://www.springframework.org/schema/aop 
+     				http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       				http://www.springframework.org/schema/util	
+       				http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       				http://www.springframework.org/schema/mvc
+       				http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<context:component-scan base-package="com.tarsier.rule">
+		<!-- <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" 
+			/> -->
+	</context:component-scan>
+
+	<context:property-placeholder location="classpath:test_config.properties"
+		ignore-resource-not-found="true" file-encoding="utf-8" />
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<util:list id="beanList">
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</util:list>
+		</property>
+
+	</bean>
+
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes" value="application/json">
+		</property>
+	</bean>
+	<!-- <bean id="ipCheckFilter" class="com.tarsier.util.util.filter.IpCheckAPIFilter"></bean> -->
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="exceptionResolver"
+		class="com.tarsier.rule.exception.ExceptionResolver"></bean>
+
+	<util:list id="sources">
+		<ref bean="fileSource" />
+		<ref bean="hbSource" />
+	</util:list>
+	<bean id="fileSource" class="com.tarsier.rule.source.FileSource"></bean>
+	<bean id="hbSource" class="com.tarsier.rule.source.HeartBeatSource"></bean>
+	<!--<bean id="source" class="com.tarsier.rule.source.KafKaSource"></bean> 
+		<bean id="source" class="com.tarsier.rule.source.HttpSource"></bean> -->
+	<!-- mock -->
+	<bean id="alarmSystemProxy"
+		class="com.tarsier.rule.mock.MockAlarmProxy"></bean>
+	<bean id="ruleEngineProxy"
+		class="com.tarsier.rule.mock.MockRuleProxy"></bean>
+</beans>

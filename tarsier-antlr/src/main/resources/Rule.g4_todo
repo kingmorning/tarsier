@@ -1,0 +1,65 @@
+grammar Rule;
+@header {
+package com.tarsier.antlr;
+}
+
+stat returns[boolean value]
+	 : exp=expr 															{$value = $exp.value;}
+	 ;
+	 
+expr returns[boolean value]
+	: '(' e=expr ')'														{$value=$e.value;}
+	| s=stringExpr															{$value=Boolean.valueOf($s.value);}
+	| c=calcExpr															{$value=$c.value == 0 ? false : true;}
+	| r=relationExpr														{$value=$r.value;}
+	| '!' e=expr															{$value=!$e.value;}
+	| el=expr op=('&&' | '||') er=expr 										{$value=$op.text.equals("&&") ? ($el.value && $er.value) : ($el.value || $er.value);}
+	;
+relationExpr returns[boolean value]
+	:	op=EXIST k=KEY														
+	|	sl=stringExpr op=CONTAIN sr=stringExpr								{$value= $sl.value==null ? $sr.value==null : $sl.value.toLowerCase().contains($sr.value==null ? null : $sr.value.toLowerCase());}	
+	|	sl=stringExpr op='=' sr=stringExpr									{$value= $sl.value==null ? $sr.value==null : $sl.value.equalsIgnoreCase($sr.value);}	
+	|	sl=stringExpr op='!=' sr=stringExpr									{$value= $sl.value==null ? $sr.value!=null : !$sl.value.equalsIgnoreCase($sr.value);}	
+	|	nl=calcExpr op='<'  nr=calcExpr										{$value= $nl.value<$nr.value;}
+	|	nl=calcExpr op='<='  nr=calcExpr									{$value= $nl.value<=$nr.value;}	
+	|	nl=calcExpr op='>'  nr=calcExpr										{$value= $nl.value>$nr.value;}
+	|	nl=calcExpr op='>='  nr=calcExpr									{$value= $nl.value>=$nr.value;}	
+	|	nl=calcExpr op='=' nr=calcExpr										{$value= $nl.value==$nr.value;}	
+	|	nl=calcExpr op='!=' nr=calcExpr										{$value= $nl.value!=$nr.value;}
+	;
+calcExpr returns[double value]
+	:	'(' c=calcExpr ')'													{$value= $c.value;}
+	|	n=numberExpr														{$value= $n.value;}	
+	|	cl=calcExpr op=('*' | '/')  cr=calcExpr								{$value= $op.text.equals("*") ? ($cl.value*$cr.value) : ($cl.value/$cr.value);}
+	|   cl=calcExpr op=('+' | '-')  cr=calcExpr								{$value= $op.text.equals("+") ? ($cl.value+$cr.value) : ($cl.value-$cr.value);}
+	|	'-' cr=calcExpr														{$value= -$cr.value;}	
+	;
+numberExpr returns[double value]
+	:	lon=INT																{$value= Double.parseDouble($lon.text);}
+	|	dou=DOUBLE															{$value= Double.parseDouble($dou.text);}
+	|	key=keyExpr															{$value= Double.parseDouble(String.valueOf($key.value));}
+	|	fun=funExpr															{$value= Double.parseDouble(String.valueOf($fun.value));}
+	;
+stringExpr returns[String value]	
+	:	str=STRING															{String v= $str.text.substring(1,$str.text.length()-1);$value=v.replaceAll("\\\\\"","\"");}
+	|	key=keyExpr															{$value= String.valueOf($key.value);}
+	|	fun=funExpr															{$value= String.valueOf($fun.value);}
+	;
+keyExpr		returns[Object value]
+	:	key=KEY
+	;
+funExpr		returns[Object value]
+	:	fun=FUNCTION
+	;
+	
+CONTAIN	:   '#'	|   'contain'	;
+EXIST : '@' | 'exist';
+STRING :  '"' (ESC|.)*? '"';
+FUNCTION : KEY (WS)*'(' ( (WS)* KEY|INT(WS)* (','(WS)*KEY|INT(WS)*)*)? (WS)*')';
+KEY	:  [A-Za-z_@]+[A-Za-z0-9_@-]*;
+INT	:  [0-9]+;
+DOUBLE :  (INT+ '.' INT);
+WS	 :   [ \t\n\r]+ -> skip ;
+ESC	:   '\\"' 
+	   |   '\\\\' 
+	   ; 

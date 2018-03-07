@@ -20,3 +20,27 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Lines that start with '#' are comments.
+*~
+*.diff
+*#
+pmd_report.html
+*/bin
+.idea
+*.iml
+.classpath
+.project
+.settings
+.eclipse
+.DS_Store
+**/.DS_Store
+target
+dependency-reduced-pom.xml
+
+tarsier-antlr/src/main/java/com/tarsier/antlr/Rule*
+**/.classpath
+**/.project
+**/.settings
+**/.eclipse
+**/target

@@ -1,0 +1,8 @@
+{"timestamp":"2015-03-01T17:01:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName1","message":"testMessage 1","path":"/var/log/maillog","type":"abc", "responseTime":1}
+{"timestamp":"2015-03-01T17:02:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName2","message":"testMessage 2","path":"/var/log/maillog","type":"good", "responseTime":2}
+{"timestamp":"2015-03-01T17:03:03.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName2","message":"testMessage 2","path":"/var/log/maillog","type":"GOOD", "responseTime":3}
+{"timestamp":"2015-03-01T17:04:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName3","message":"testMessage 3.0","path":"/var/log/maillog","type":"syStem", "responseTime":4}
+{"timestamp":"2015-03-01T17:05:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName1","message":"testMessage 1","path":"/var/log/maillog","type":"abc", "responseTime":5}
+{"timestamp":"2015-03-01T17:06:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName2","message":"testMessage 2","path":"/var/log/maillog","type":"good", "responseTime":6}
+{"timestamp":"2015-03-01T17:22:03.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName2","message":"testMessage 2","path":"/var/log/maillog","type":"GOOD", "responseTime":7}
+{"timestamp":"2015-03-01T17:23:02.372+08:00","@version":"1","projectName":"log-test","host":"localhost6.localprojectName3","message":"testMessage 3.0","path":"/var/log/maillog","type":"syStem", "responseTime":8}

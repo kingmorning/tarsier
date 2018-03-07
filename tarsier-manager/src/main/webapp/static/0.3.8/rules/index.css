@@ -1,0 +1,25 @@
+.page-rules {
+  padding: 20px;
+}
+.page-rules .btn-group,
+.page-rules .pagination {
+  margin: 10px 0;
+}
+.page-rules .pagination {
+  text-align: right;
+}
+.form-item {
+  margin-bottom: 10px;
+}
+.rule-item {
+  margin-bottom: 15px;
+}
+.rule-item .item-name {
+  text-align: right;
+}
+.ant-form-item :not(.ant-form) > .ant-form-item.ant-form-item-with-help {
+  margin-bottom: -6px;
+}
+.popover-desc {
+  max-width: 300px;
+}

@@ -1,0 +1,273 @@
+grammar Rule;
+
+@header {
+package com.tarsier.antlr;
+
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.tarsier.antlr.data.LoggerMsg;
+import com.tarsier.antlr.data.EventFilterConstant;
+}
+@members{ 
+    
+	private static final Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
+    public Map<String, Object> functionMap = new HashMap<String, Object>();
+    // minutes
+    private int           pastTime;
+
+    private long                startSeconds;
+
+    private Cache<Long, Map<String, Double>> cache;
+
+    private LoggerMsg           msg;
+    
+    public void setPastTime(int pastTime){
+    	this.pastTime = pastTime;
+    }
+    
+    public void setCache(Cache<Long, Map<String, Double>> cache) {
+        this.cache = cache;
+    }
+    
+    public void setMsg(LoggerMsg msg) {
+        this.msg = msg;
+        this.startSeconds = msg.getSeconds() - pastTime;
+        functionMap.clear();
+    }
+    
+    public void resetInput(){
+    	_input.seek(0);
+    }
+
+    private Double sum(String fName) {
+        Double value = null;
+        ConcurrentMap<Long, Map<String, Double>> asMap = cache.asMap();
+        Set<Long> keys = asMap.keySet();
+        for (Long key : keys) {
+            if (startSeconds <= key) {
+            	if(value == null){
+            		value = 0.0;
+            	}
+                value = value + asMap.get(key).get(fName);
+            }
+        }
+
+        return value;
+    }
+
+	private double avg(String fName) {
+	    double sum = sum("sum_"+fName);
+	    return sum == 0 ? 0 : sum / count("count_"+fName);
+	}
+
+    private Long count(String fName) {
+        Double value = 0.0;
+        ConcurrentMap<Long, Map<String, Double>> asMap = cache.asMap();
+        Set<Long> keys = asMap.keySet();
+        for (Long key : keys) {
+            if (startSeconds <= key) {
+                value = value + asMap.get(key).get(fName);
+            }
+        }
+        return value.longValue();
+    }
+    
+    private Double max(String fName){
+    	Double value = null;
+    	ConcurrentMap<Long, Map<String, Double>> asMap = cache.asMap();
+        Set<Long> keys = asMap.keySet();
+        for (Long key : keys) {
+            if (startSeconds <= key) {
+                double max = asMap.get(key).get(fName);
+                if(value == null || max > value){
+                	value = max;
+                }
+            }
+        }
+        return value;
+    }
+    
+    private Double min(String fName){
+    	Double value = null;
+    	ConcurrentMap<Long, Map<String, Double>> asMap = cache.asMap();
+        Set<Long> keys = asMap.keySet();
+        for (Long key : keys) {
+            if (startSeconds <= key) {
+                double min = asMap.get(key).get(fName);
+                if(value == null || min < value){
+                	value = min;
+                }
+            }
+        }
+        return value;
+    }
+    
+private boolean contains(Object o1, Object o2){
+		String lv = o1 == null ? "" : o1.toString().toLowerCase();
+		String rv = o2 == null ? "" : o2.toString().toLowerCase();
+		return lv.contains(rv);
+}
+
+private boolean exist(Object o1){
+	return msg.getMappedMsg().containsKey(o1);
+}
+
+private boolean lessThan(Object o1, Object o2){
+	Double d1 = transferDouble(o1);
+	if( d1!=null ){
+		Double d2 = transferDouble(o2);
+		if(d2!=null){
+			return d1<d2;
+		} 
+	}
+	return false;
+}
+
+private boolean lessEquals(Object o1, Object o2){
+	Double d1 = transferDouble(o1);
+	if( d1!=null ){
+		Double d2 = transferDouble(o2);
+		if(d2!=null){
+			return d1<=d2;
+		}
+	}
+	return false;
+}
+
+private boolean greaterThan(Object o1, Object o2){
+	Double d1 = transferDouble(o1);
+	if( d1!=null ){
+		Double d2 = transferDouble(o2);
+		if(d2!=null){
+			return d1>d2;
+		} 
+	}
+	return false;
+}
+
+private boolean greaterEquals(Object o1, Object o2){
+	Double d1 = transferDouble(o1);
+	if( d1!=null ){
+		Double d2 = transferDouble(o2);
+		if(d2!=null){
+			return d1>=d2;
+		} 
+	}
+	return false;
+}
+
+private boolean Equal(Object o1, Object o2){
+
+	        if (o1 != null && o2 != null){
+		        if(!o1.getClass().equals(o2.getClass())){
+		            Double d1 = transferDouble(o1);
+		            if( d1!=null ){
+		                Double d2 = transferDouble(o2);
+		                if(d2!=null){
+		                    return d1.doubleValue()==d2.doubleValue();
+		                } 
+		            }
+		        }
+		        else if(o1 instanceof String || o2 instanceof String){
+		            return o1.toString().equalsIgnoreCase(o2.toString());
+		        }
+		        else{
+		            return o1.equals(o2);
+		        }
+		    }
+			return false;
+}
+
+private Double transferDouble(Object o){
+	if(o == null){
+		return null;
+	}
+	else{
+		Double d = null;
+		if( o instanceof Double ){
+			d= (Double)o;
+		} else if ( o instanceof Integer ){
+			d = ((Integer)o).doubleValue();
+		} else {
+				d = Double.parseDouble(o.toString());
+		}
+		return d;
+	}
+}
+}
+
+stat returns[boolean value]
+	 : kwLogicalExpression    {$value=$kwLogicalExpression.value;}
+	 ;
+
+kwLogicalExpression returns[boolean value] 
+                    : kwRelationalExpression                                            {$value=$kwRelationalExpression.value;} 
+                    | function                                                          {$value=(Boolean)$function.value;}        
+                    | NOT clev=kwLogicalExpression                                 		{$value=!$clev.value;}
+                    | clev1=kwLogicalExpression OR clev2=kwLogicalExpression   			{$value=$clev1.value || $clev2.value;}
+					| clev1=kwLogicalExpression AND clev2=kwLogicalExpression 			{$value=$clev1.value && $clev2.value;}
+					| '(' clev=kwLogicalExpression ')'                                  {$value=$clev.value;}              
+					;
+					
+kwRelationalExpression returns[boolean value] 
+    :   n1=n_s_k_f '<'  n2=n_s_k_f  {$value = lessThan($n1.value, $n2.value);}
+    |   n1=n_s_k_f '<=' n2=n_s_k_f  {$value = lessEquals($n1.value, $n2.value);}
+    |   n1=n_s_k_f '>'  n2=n_s_k_f  {$value = greaterThan($n1.value, $n2.value);}
+    |   n1=n_s_k_f '>=' n2=n_s_k_f  {$value = greaterEquals($n1.value, $n2.value);}
+    |   n1=n_s_k_f '='  n2=n_s_k_f  {$value = Equal($n1.value, $n2.value);}
+    |   n1=n_s_k_f '!=' n2=n_s_k_f  {$value = !Equal($n1.value, $n2.value);}
+    |   n1=n_s_k_f CONTAIN n2=n_s_k_f  {$value = contains($n1.value, $n2.value);}
+    |   n1=n_s_k_f EXIST {$value = exist($n1.text);}
+    ;
+
+n_s_k_f returns[Object value]
+    : long_value   {$value = $long_value.value;}
+    | double_value {$value = $double_value.value;}
+    | string_value {$value = $string_value.value;}
+    | key_value    {$value = $key_value.value;}
+    | function     {$value = $function.value;} 
+    ; 
+
+long_value   returns[long value]   : i = INT {$value = Long.parseLong($i.text);};
+double_value returns[double value] : d = DOUBLE {$value = Double.parseDouble($d.text);};
+string_value returns[String value] : s = STRING {String v= $s.text.substring(1,$s.text.length()-1);
+                                                 $value=v.replaceAll("\\\\\"","\"");
+												};
+key_value    returns[Object value] : o = KEY {    String key = $o.text;
+											      $value = msg.getMappedMsg().get(key);
+										      };
+function     returns[Object value] : f = FUNCTION_INVOKE {String fName = $f.text.replaceAll(" ", "").toLowerCase();
+														  if(cache == null && msg == null){$value=fName;}
+														  else if(fName.startsWith("count(")){$value=count(fName);} 
+														  else if(fName.startsWith("sum(")){$value=sum(fName);} 
+														  else if(fName.startsWith("avg(")){$value=avg(fName);}
+														  else if(fName.startsWith("max(")){$value=max(fName);}
+														  else if(fName.startsWith("min(")){$value=min(fName);}
+														  else {throw new RuntimeException("not support function:"+fName);}
+														  functionMap.put($f.text, $value);
+														  if(LOGGER.isDebugEnabled()){
+																	      LOGGER.debug("call function {}, value is {}", fName, $value);
+																	  }
+														  };
+
+AND : 'AND' | 'and'| '&'| '&&' ;
+OR  : 'OR'  |   'or'	| '|'	| '||'    ;
+NOT    :   'NOT'    |   'not'	| '!'    ;
+CONTAIN    :   'CONTAIN'    |   'contain'    ;
+EXIST : 'EXIST' | 'exist';
+STRING :  '"' (ESC|.)*? '"';
+FUNCTION_INVOKE : KEY (WS)*'(' ( (WS)* KEY|INT(WS)* (','(WS)*KEY|INT(WS)*)*)? (WS)*')';
+KEY    :  [A-Za-z_@]+[A-Za-z0-9_@]*;
+INT    :  [0-9]+;
+DOUBLE :  (INT+ '.' INT);
+WS     :   [ \t\n\r]+ -> skip ;
+ESC    :   '\\"' 
+       |   '\\\\' 
+       ; 

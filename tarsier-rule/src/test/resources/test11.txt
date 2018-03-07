@@ -1,0 +1,4 @@
+{    "@timestamp": "2017-08-30T03:53:07.668Z",    "@version": "1",    "error": "Read timed out",    "projectName": "log-test",    "url": "http://10.208.231.154/frontOffice/v3/monitor/healthCheck",    "timestamp": "2017-08-30T11:53:07.668Z"  }
+{    "@timestamp": "2017-08-30T03:53:12.681Z",    "@version": "1",    "error": "Read timed out",    "projectName": "log-test",    "url": "http://10.208.231.154/frontOffice/v3/monitor/healthCheck",    "timestamp": "2017-08-30T11:53:12.681Z"  }
+{    "@timestamp": "2017-08-30T03:53:17.693Z",    "@version": "1",    "error": "Read timed out",    "projectName": "log-test",    "url": "http://10.208.231.154/frontOffice/v3/monitor/healthCheck",    "timestamp": "2017-08-30T11:53:17.693Z"  }
+{    "@timestamp": "2017-08-30T03:53:22.700Z",    "@version": "1",    "error": "Read timed out",    "projectName": "log-test",    "url": "http://10.208.231.154/frontOffice/v3/monitor/healthCheck",    "timestamp": "2017-08-30T11:53:22.700Z"}

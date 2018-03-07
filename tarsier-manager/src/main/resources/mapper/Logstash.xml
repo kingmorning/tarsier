@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>    
+<!DOCTYPE mapper    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tarsier.manager.mapper.LogstashMapper">
+	<select id="select" resultType="com.tarsier.manager.data.Logstash">
+		select * from `tarsier`.`logstash`
+		where 1=1
+		<if test="userName != null"> and `user_name` = #{userName}</if>
+		<if test="group != null"> and `group` like concat('%',#{group},'%')</if>
+		<if test="host != null"> and `host` like concat('%',#{host},'%')</if>
+		<if test="ip != null"> and `ip` = #{ip}</if>
+		<if test="disabled != null"> and `disabled`=#{disabled}</if>
+		order by id desc
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.tarsier.manager.data.Logstash">
+		INSERT INTO `tarsier`.`logstash`
+		(
+		`group`,
+		`host`,
+		`ip`,
+		`config`,
+		`disabled`,
+		`create_time`,
+		user_name)
+		VALUES
+		(
+		#{group},
+		#{host},
+		#{ip},
+		#{config},
+		#{disabled},
+		#{createTime},
+		#{userName}
+		);
+	</insert>
+
+	<update id="update"
+		parameterType="com.tarsier.manager.data.Logstash">
+		UPDATE `tarsier`.`logstash`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="group!=null">`group`=#{group},</if>
+			<if test="host!=null">`host`=#{host},</if>
+			<if test="ip!=null">`ip`=#{ip},</if>
+			<if test="config!=null">`config`=#{config},</if>
+			<if test="userName!=null">`user_name`=#{userName},</if>
+		</trim>
+		WHERE id=#{id}
+	</update>
+</mapper>

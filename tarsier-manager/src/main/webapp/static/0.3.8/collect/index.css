@@ -1,0 +1,18 @@
+.page-collect {
+  padding: 20px;
+}
+.page-collect .btn-group,
+.page-collect .pagination {
+  margin: 10px 0;
+}
+.page-collect .pagination {
+  text-align: right;
+}
+.create-host-form .form-item,
+.update-host-form .form-item {
+  margin-bottom: 10px;
+}
+.popover-desc {
+  max-width: 600px;
+  word-break: break-all;
+}
