@@ -157,9 +157,9 @@ public class RuleController {
 
 	@RequestMapping(value = "/persons", method = RequestMethod.GET)
 	@ResponseBody
-	public Object persons(@RequestParam(name = "wanxin", required = false) String wanxin,
+	public Object persons(@RequestParam(name = "name", required = false) String name,
 			@RequestParam(name = "mobile", required = false) String mobile) {
-		List<Map<String, String>> ps = ruleService.persons(wanxin, mobile);
+		List<Map<String, String>> ps = ruleService.persons(name, mobile);
 		JSONObject jo = new JSONObject();
 		jo.put(ITEMS, ps);
 		jo.put(Constant.SUCCESS, true);

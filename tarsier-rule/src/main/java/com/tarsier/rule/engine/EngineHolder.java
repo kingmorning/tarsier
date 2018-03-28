@@ -33,7 +33,7 @@ import com.tarsier.util.Constant;
 public class EngineHolder {
 
 	private static final Logger						LOGGER		= LoggerFactory.getLogger(EngineHolder.class);
-	@Value("${thread.pool.size}")
+	@Value("${task.thread.pool}")
 	private int										poolSize	= 100;
 	// 行解析认为的线程池
 	public ExecutorService							service;

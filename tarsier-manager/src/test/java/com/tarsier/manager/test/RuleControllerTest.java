@@ -91,7 +91,7 @@ public class RuleControllerTest extends AbstractTest {
 	}
 	@Test
 	public void persons() throws Exception {
-		mockMvc.perform(get("/rule/persons?wanxin=wangchen").accept(jsonUTF8).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+		mockMvc.perform(get("/rule/persons?name=wangchen").accept(jsonUTF8).contentType(MediaType.APPLICATION_JSON)).andDo(print())
 		.andExpect(content().json(expactSuccess()));
 	}
 	

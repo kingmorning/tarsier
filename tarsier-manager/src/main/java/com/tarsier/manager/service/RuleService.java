@@ -165,8 +165,8 @@ public class RuleService {
 		syncRuleServer(id);
 	}
 
-	public List<Map<String, String>> persons(String wanxin, String mobile) {
-		return mapper.persons(wanxin == null ? "" : wanxin, mobile == null ? "" : mobile);
+	public List<Map<String, String>> persons(String name, String mobile) {
+		return mapper.persons(name == null ? "" : name, mobile == null ? "" : mobile);
 	}
 
 	public List<String> projects(String userName) {

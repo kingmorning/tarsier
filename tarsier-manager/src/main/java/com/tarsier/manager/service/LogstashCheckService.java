@@ -31,7 +31,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.tarsier.manager.data.Collect;
-import com.tarsier.manager.data.Logstash;
 import com.tarsier.manager.mapper.CollectMapper;
 import com.tarsier.util.Constant;
 import com.tarsier.util.DateUtil;
@@ -133,24 +132,6 @@ public class LogstashCheckService {
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
-	}
-
-	public JSONObject extend(Logstash l) {
-		JSONObject json = new JSONObject();
-		if (l != null) {
-			json.put("id", l.getId());
-			json.put("userName", l.getUserName());
-			json.put("group", l.getGroup());
-			json.put("host", l.getHost());
-			json.put("ip", l.getIp());
-			json.put("disabled", l.isDisabled());
-			json.put("createTime", DateUtil.getDate(l.getCreateTime(), DateUtil.DATE_TIME));
-			json.put("updateTime", DateUtil.getDate(l.getUpdateTime(), DateUtil.DATE_TIME));
-			json.put("config", l.getConfig());
-
-			desc(json, l.getIp(), l.isDisabled());
-		}
-		return json;
 	}
 
 	public void desc(JSONObject json, String ip, boolean disabled) {

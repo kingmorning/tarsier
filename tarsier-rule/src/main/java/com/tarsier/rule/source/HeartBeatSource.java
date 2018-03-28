@@ -64,7 +64,7 @@ public class HeartBeatSource extends AbstractSource {
 	public void register(Engine engine){
 		String expr = engine.getTrigger().getExpression();
 		String en = engine.getEngineName();
-		if(expr.contains("<") || expr.contains("<=")){
+		if(expr.contains("<")){
 			if(!heartMap.containsKey(en)){
 				heartMap.put(en, new HashSet<Integer>());
 			}

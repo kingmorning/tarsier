@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.tarsier.manager.controller.api.CollectAPI;
 import com.tarsier.manager.data.Collect;
 import com.tarsier.manager.data.CollectType;
-import com.tarsier.manager.data.Logstash;
 import com.tarsier.manager.mapper.CollectMapper;
 import com.tarsier.manager.util.UserUtil;
 import com.tarsier.util.DateUtil;

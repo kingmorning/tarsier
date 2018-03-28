@@ -60,12 +60,8 @@
 
 	<util:list id="sources">
 		<ref bean="kafkaSource" />
-		<ref bean="httpSource" />
-		<!-- <ref bean="cmSource" /> -->
 	</util:list>
 	<bean id="kafkaSource" class="com.tarsier.rule.source.KafKaSource"></bean>
 	<!-- <bean id="kafkaSource" class="com.tarsier.rule.source.KafkaZkSource"></bean> -->
-	<bean id="httpSource" class="com.tarsier.rule.source.HTTPSource"></bean>
-	<!-- <bean id="cmSource" class="com.tarsier.rule.source.CloudareManagerSource"></bean> -->
 	<bean id="hbSource" class="com.tarsier.rule.source.HeartBeatSource"></bean>
 </beans>
