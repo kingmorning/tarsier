@@ -26,7 +26,7 @@ public class HomeApiTest extends AbstractTest {
 	
     @Test
     public void lastlog() throws Exception {
-        mockMvc.perform(get("/lastlog").accept(jsonUTF8).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/msg").accept(jsonUTF8).contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(model().attributeExists(Constant.RESULT))
         .andExpect(view().name(Constant.TEXT_PAGE));

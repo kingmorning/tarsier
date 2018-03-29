@@ -61,7 +61,17 @@
 	<util:list id="sources">
 		<ref bean="kafkaSource" />
 	</util:list>
+	<util:list id="alarmProxies">
+		<ref bean="smsAlarm" />
+		<ref bean="emailAlarm" />
+		<ref bean="weChatAlarm" />
+		<ref bean="kafkaSource" />
+	</util:list>
 	<bean id="kafkaSource" class="com.tarsier.rule.source.KafKaSource"></bean>
 	<!-- <bean id="kafkaSource" class="com.tarsier.rule.source.KafkaZkSource"></bean> -->
 	<bean id="hbSource" class="com.tarsier.rule.source.HeartBeatSource"></bean>
+	<bean id="smsAlarm" class="com.tarsier.rule.proxy.SmsAlarmProxy"></bean>
+	<bean id="emailAlarm" class="com.tarsier.rule.proxy.EmailAlarmProxy"></bean>
+	<bean id="weChatAlarm" class="com.tarsier.rule.proxy.WeChatAlarmProxy"></bean>
+	<bean id="kafkaAlarm" class="com.tarsier.rule.proxy.KafkaAlarmProxy"></bean>
 </beans>

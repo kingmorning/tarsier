@@ -34,7 +34,7 @@ public class EventFilter {
 		}
 	}
 
-	public boolean filter(Map<String, String> msg, long second) throws EventFilterException {
+	public synchronized boolean filter(Map<String, String> msg, long second) throws EventFilterException {
 		try {
 			parser.setMsg(msg, second);
 			StatContext stat = parser.stat();

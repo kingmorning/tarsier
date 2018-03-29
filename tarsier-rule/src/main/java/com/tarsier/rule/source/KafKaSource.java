@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.util.RuleUtil;
 
 /**

@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.tarsier.rule.data.EngineStatus;
 import com.tarsier.rule.engine.EngineHolder;
 import com.tarsier.rule.mock.MockRuleProxy;
 import com.tarsier.rule.service.Application;
@@ -61,7 +60,6 @@ public abstract class AbstractTest {
 
 	@Before
 	public void setUp() {
-		EngineStatus.perform = true;
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
@@ -79,5 +77,6 @@ public abstract class AbstractTest {
 		r.setType(7);
 		return r;
 	}
+	
 
 }

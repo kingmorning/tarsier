@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.data.Engine;
 import com.tarsier.util.DateUtil;
 
@@ -35,7 +35,7 @@ public class HeartBeatSource extends AbstractSource {
 				try{
 					long time = System.currentTimeMillis();
 					for(String projectName : heartMap.keySet()){
-						put(new LoggerMsg(projectName, time));
+						put(new MsgEvent(projectName, time));
 						lastMsg=projectName+", "+DateUtil.getDateByTime(time+"", DateUtil.DATE_TIME_SLASH);
 					}
 				}

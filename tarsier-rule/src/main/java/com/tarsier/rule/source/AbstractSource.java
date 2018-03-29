@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.exception.ExceptionResolver;
 
 /**
@@ -23,13 +23,13 @@ public abstract class AbstractSource implements Source {
 
 	private static final Logger			LOGGER	= LoggerFactory.getLogger(AbstractSource.class);
 	protected final AtomicBoolean		running	= new AtomicBoolean(false);
-	private BlockingQueue<LoggerMsg>	queue;
+	private BlockingQueue<MsgEvent>	queue;
 	protected String lastMsg;
-	public void setQueue(BlockingQueue<LoggerMsg> queue) {
+	public void setQueue(BlockingQueue<MsgEvent> queue) {
 		this.queue = queue;
 	}
 
-	public void put(LoggerMsg msg) {
+	public void put(MsgEvent msg) {
 		try {
 			if(msg !=null){
 				queue.put(msg);
@@ -44,7 +44,7 @@ public abstract class AbstractSource implements Source {
 	public void put(String msg) {
 		try {
 			this.lastMsg=msg;
-			this.put(new LoggerMsg(msg));
+			this.put(new MsgEvent(msg));
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

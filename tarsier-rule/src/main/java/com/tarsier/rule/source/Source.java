@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 
 /**
  * 类Source.java的实现描述：数据源接口，获取数据的地方
@@ -28,7 +28,7 @@ public interface Source {
 	void stop();
 
 	void restart(Set<String> channels);
-	void setQueue(BlockingQueue<LoggerMsg> queue);
+	void setQueue(BlockingQueue<MsgEvent> queue);
 	/**
 	 * 获取配置信息
 	 * 

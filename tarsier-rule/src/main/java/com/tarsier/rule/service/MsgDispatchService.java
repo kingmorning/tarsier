@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.data.Engine;
 import com.tarsier.rule.engine.EngineHolder;
 import com.tarsier.rule.engine.RunTask;
@@ -35,19 +35,19 @@ import com.yammer.metrics.core.Meter;
  * @author wangchenchina@hotmail.com 2016年2月11日 上午11:24:56
  */
 @Service
-public class LogDispatchService implements Runnable {
-	private static final Logger				LOGGER			= LoggerFactory.getLogger(LogDispatchService.class);
+public class MsgDispatchService implements Runnable {
+	private static final Logger				LOGGER			= LoggerFactory.getLogger(MsgDispatchService.class);
 	private int								queueSize		= 10000;
-	private final BlockingQueue<LoggerMsg>	queue			= new ArrayBlockingQueue<LoggerMsg>(queueSize);
-	private final Meter						getRequests		= Metrics.newMeter(LogDispatchService.class,
+	private final BlockingQueue<MsgEvent>	queue			= new ArrayBlockingQueue<MsgEvent>(queueSize);
+	private final Meter						getRequests		= Metrics.newMeter(MsgDispatchService.class,
 																	"get-requests", "requests", TimeUnit.SECONDS);
 	private Thread							dispathThread	= null;
-	private LoggerMsg						lastlog			= null;
+	private MsgEvent						msg			= null;
 	@Autowired
 	private EngineHolder					holder;
 
-	public LoggerMsg getLastlog() {
-		return lastlog;
+	public MsgEvent getMsg() {
+		return msg;
 	}
 
 	/**
@@ -87,8 +87,8 @@ public class LogDispatchService implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				LoggerMsg msg = queue.take();
-				lastlog = msg;
+				MsgEvent msg = queue.take();
+				msg = msg;
 				getRequests.mark();
 				String projectName = msg.getProjectName();
 				if (projectName == null) {
@@ -136,7 +136,7 @@ public class LogDispatchService implements Runnable {
 		return getRequests.oneMinuteRate();
 	}
 
-	public BlockingQueue<LoggerMsg> getQueue() {
+	public BlockingQueue<MsgEvent> getQueue() {
 		return queue;
 	}
 }

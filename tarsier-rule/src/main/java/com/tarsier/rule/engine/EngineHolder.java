@@ -183,7 +183,7 @@ public class EngineHolder {
 					}
 				}
 				if(e.getLastAlarm() !=null){
-					long time = e.getLastAlarm().getTime();
+					long time = e.getLastAlarm().getMsg().getTime();
 					Long preTime = alarmMap.get(e.getId());
 					if(preTime ==null || preTime.longValue()<time){
 						alarmMap.put(e.getId(), time);

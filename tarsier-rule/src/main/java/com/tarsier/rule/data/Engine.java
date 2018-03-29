@@ -5,30 +5,23 @@
  */
 package com.tarsier.rule.data;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.tarsier.antlr.EventFilter;
 import com.tarsier.antlr.EventTrigger;
 import com.tarsier.antlr.exception.EventFilterException;
 import com.tarsier.antlr.groupby.GroupBy;
-import com.tarsier.data.LoggerMsg;
-import com.tarsier.rule.proxy.AlarmSystemProxy;
-import com.tarsier.rule.util.RuleUtil;
+import com.tarsier.data.MsgEvent;
+import com.tarsier.rule.service.AlarmService;
 import com.tarsier.util.Constant;
 import com.tarsier.util.Rule;
 
 /**
- * 类RuleEngine.java的实现描述：规则引擎类，由规则（ruleForm）解析而来。是解析告警的主要逻辑类。
+ * 类RuleEngine.java的实现描述：规则引擎，由规则（Rule）解析而来。是运行态的规则
  * 
  * @author wangchenchina@hotmail.com 2016年2月10日 下午7:43:11
  */
@@ -38,28 +31,23 @@ public class Engine {
 	@JSONField(serialize = false, deserialize = false)
 	private final Rule rule;
 	private final String engineName;
-	// 缓存告警信息，根据设置的告警间隔时间 自动过期。防止在间隔时间内，重复告警
-	@JSONField(serialize = false, deserialize = false)
-	private final LoadingCache<String, AlarmInfo> alarmCache;
 	// 过滤器
 	private final EventFilter filter;
 	// 规则告警触发器
 	private final EventTrigger trigger;
 	// 规则恢复触发器
 	private final EventTrigger recover;
-	private LoggerMsg lastLog;
-	private AlarmInfo lastAlarm;
+	private MsgEvent latestMsg;
+	private AlarmEvent lastAlarm;
 	private int alarmTimes;
 	// 告警系统proxy
 	@JSONField(serialize = false, deserialize = false)
-	private final AlarmSystemProxy alarmService;
+	private final AlarmService alarmService;
 	// 规则引擎当前的状态，red：警告状态，yellow：正常状态，green：良好状态（配置了recover
 	// 并且达到recover的触发条件，才会有green状态）
 	private String status = Constant.GREEN;
-	private boolean debugModel = false;
 	@JSONField(serialize = false, deserialize = false)
-	private LoadingCache<String, ItemPerform> data = null;
-
+	private AlarmEvent alarmEvent;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -70,30 +58,21 @@ public class Engine {
 		m.put("engineName", engineName);
 		m.put("status", status);
 		m.put("cache", trigger.getGroupby()==null ? "" : JSON.toJSON(trigger.getGroupby().getCache()));
-		m.put("lastLog", lastLog==null ? "" : lastLog.getMessage());
-		m.put("lastLogTime", lastLog==null ? 0 : lastLog.getTime());
-		m.put("lastAlarm", lastAlarm==null ? "" : lastAlarm.getMessage());
-		m.put("lastAlarmTime", lastAlarm==null ? 0 : lastAlarm.getTime());
+		m.put("message", latestMsg==null ? "" : latestMsg.getMessage());
+		m.put("messageTime", latestMsg==null ? 0 : latestMsg.getTime());
+		m.put("alarm", lastAlarm==null ? "" : lastAlarm.getMsg().getMessage());
+		m.put("alarmTime", alarmEvent==null ? 0 : alarmEvent.getMsg().getTime());
 		return m;
 	}
 
 	public Engine(Rule rule, String projectName, EventFilter filterTree, EventTrigger triggerTree, EventTrigger recover,
-			AlarmSystemProxy alarmService) {
+			AlarmService alarmService) {
 		this.rule = rule;
 		this.engineName = projectName;
 		this.filter = filterTree;
 		this.trigger = triggerTree;
 		this.recover = recover;
 		this.alarmService = alarmService;
-
-		this.alarmCache = CacheBuilder.newBuilder()
-				.expireAfterWrite(rule.getInterval() <= 0 ? 30 : rule.getInterval(), TimeUnit.MINUTES)
-				.build(new CacheLoader<String, AlarmInfo>() {
-
-					public AlarmInfo load(String key) {
-						return new AlarmInfo(-1);
-					}
-				});
 	}
 
 	/**
@@ -121,78 +100,49 @@ public class Engine {
 		return rule.getChannel();
 	}
 
-	public synchronized boolean filter(LoggerMsg msg) throws EventFilterException {
+	public boolean filter(MsgEvent msg) throws EventFilterException {
 		return filter.filter(msg.getMappedMsg(), msg.getSeconds());
 	}
 
-	public synchronized boolean trigger(LoggerMsg msg) throws EventFilterException {
+	public boolean trigger(MsgEvent msg) throws EventFilterException {
 		return trigger.trigger(msg.getMappedMsg(), msg.getSeconds());
 	}
 
-	public synchronized boolean recover(LoggerMsg msg) throws EventFilterException {
+	public boolean recover(MsgEvent msg) throws EventFilterException {
 		return recover != null && recover.trigger(msg.getMappedMsg(), msg.getSeconds());
 	}
 
 	/**
-	 * 发送警告接触通知
+	 * 发送恢复通知
 	 * 
 	 * @param msg
 	 */
-	public synchronized void sendRecover(LoggerMsg msg) {
+	public void sendRecover(MsgEvent msg) {
 		GroupBy groupby = recover.getGroupby();
-		String groupValue = groupby.getGroupValue(msg.getMappedMsg());
-		if (isAlarmed(groupValue)) {
-			lastAlarm = RuleUtil.recoverContent(this, recover.getFunctionMap(), msg);
-			alarmService.alarm(lastAlarm);
-			alarmCache.invalidate(groupValue);
-		}
+		String groupedValue = groupby.getGroupValue(msg.getMappedMsg());
+		AlarmEvent ae = new AlarmEvent(rule, msg, engineName, groupedValue);
+		ae.setAlarm(false);
+		alarmService.send(rule.getId()+":"+engineName+":"+groupedValue, ae);
 	}
 
 	/**
-	 * 发送告警信息
+	 * 发送告警通知
 	 * 
 	 * @param msg
 	 * @return
 	 */
-	public synchronized boolean sendAlarm(LoggerMsg msg) {
+	public boolean sendAlarm(MsgEvent msg) {
 		GroupBy groupby = trigger.getGroupby();
-		String groupValue = groupby.getGroupValue(msg.getMappedMsg());
-		if (!isAlarmed(groupValue)) {
-			lastAlarm = RuleUtil.alarmContent(this, groupValue, trigger.getFunctionMap(), msg);
-			alarmService.alarm(lastAlarm);
-			alarmCache.put(groupValue, lastAlarm);
-			LOGGER.info("put ai, type:{}, gv:{}", lastAlarm.getType(), groupValue);
+		String groupedValue = groupby.getGroupValue(msg.getMappedMsg());
+		AlarmEvent ae = new AlarmEvent(rule, msg, engineName, groupedValue);
+		boolean alarmed = alarmService.send(rule.getId()+":"+engineName+":"+groupedValue, ae);
+		if(alarmed){
 			alarmTimes++;
-			return true;
-		} else if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("canceled to send alarm. as in interval time[{}] minutes. ruleId: {}", rule.getInterval(),
-					rule.getId());
+			alarmEvent=ae;
 		}
-		return false;
+		return alarmed;
 	}
 
-	/**
-	 * 根据groupValue，判断是否处于告警间隔范围内。 同一个规则的 相同分组值，不能在规定时间内重复发送告警信息。
-	 * 
-	 * @param groupValue
-	 * @return
-	 */
-	private boolean isAlarmed(String groupValue) {
-		try {
-			AlarmInfo ai = alarmCache.get(groupValue);
-			return ai.getType() >= 0;
-		} catch (ExecutionException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return false;
-	}
-
-	// /**
-	// * @return the perform
-	// */
-	// public EngineStatus getEngineStatus() {
-	// return engineStatus;
-	// }
 
 	public EventFilter getFilter() {
 		return filter;
@@ -214,61 +164,24 @@ public class Engine {
 		this.status = status;
 	}
 
-	// public String getChannel() {
-	// return channel;
-	// }
-	//
-	// public void setChannel(String channel) {
-	// this.channel = channel;
-	// }
-
 	public EventTrigger getRecover() {
 		return recover;
 	}
 
-	public LoggerMsg getLastLog() {
-		return lastLog;
+	public MsgEvent getLastLog() {
+		return latestMsg;
 	}
 
-	public void setLastLog(LoggerMsg lastLog) {
-		this.lastLog = lastLog;
+	public void setLatestMsg(MsgEvent latestMsg) {
+		this.latestMsg = latestMsg;
 	}
 
-	public AlarmInfo getLastAlarm() {
+	public AlarmEvent getLastAlarm() {
 		return lastAlarm;
 	}
 
-	public void setLastAlarm(AlarmInfo lastAlarm) {
+	public void setLastAlarm(AlarmEvent lastAlarm) {
 		this.lastAlarm = lastAlarm;
-	}
-
-	public boolean isDebugModel() {
-		return debugModel;
-	}
-
-	public void setDebugModel(boolean debugModel) {
-		this.debugModel = debugModel;
-		if (debugModel == true) {
-			if (data == null) {
-				data = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<String, ItemPerform>() {
-
-					public ItemPerform load(String key) throws Exception {
-						return null;
-					}
-				});
-			}
-		} else if (getData() != null) {
-			data.invalidateAll();
-			setData(null);
-		}
-	}
-
-	public LoadingCache<String, ItemPerform> getData() {
-		return data;
-	}
-
-	public void setData(LoadingCache<String, ItemPerform> data) {
-		this.data = data;
 	}
 
 	public int getAlarmTimes() {

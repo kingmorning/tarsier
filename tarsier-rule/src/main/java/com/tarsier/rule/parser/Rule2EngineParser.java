@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import com.tarsier.antlr.EventFilter;
 import com.tarsier.antlr.EventTrigger;
 import com.tarsier.rule.data.Engine;
-import com.tarsier.rule.proxy.AlarmSystemProxy;
+import com.tarsier.rule.proxy.AlarmProxy;
+import com.tarsier.rule.service.AlarmService;
 import com.tarsier.util.Constant;
 import com.tarsier.util.Rule;
 
@@ -31,7 +32,7 @@ public class Rule2EngineParser {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Rule2EngineParser.class);
 	@Autowired
-	private AlarmSystemProxy alarmService;
+	private AlarmService alarmService;
 
 	public List<Engine> parse(Rule ef) {
 		LOGGER.info("start to parse rule :{}", ef);

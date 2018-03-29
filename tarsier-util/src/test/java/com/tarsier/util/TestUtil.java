@@ -18,7 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.tarsier.data.LogParser;
+import com.tarsier.data.MsgParser;
 
 public class TestUtil {
 //	Type t = new TypeToken<Map<String, String>>(){}.getType();

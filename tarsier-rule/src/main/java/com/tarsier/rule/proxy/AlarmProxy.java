@@ -5,21 +5,18 @@
  */
 package com.tarsier.rule.proxy;
 
-import com.tarsier.rule.data.AlarmInfo;
+import com.tarsier.rule.data.AlarmEvent;
 
 /**
  * 类AlarmSystemProxy.java的实现描述：告警系统代理类接口。
  * 
  * @author wangchenchina@hotmail.com 2016年2月6日 下午12:39:16
  */
-public interface AlarmSystemProxy {
+public interface AlarmProxy {
 
 	/**
 	 * @param alarmInfo
 	 * @return true:success. false:failed.
 	 */
-	public boolean alarm(AlarmInfo alarmInfo);
-
-	public void stop();
-	public void start();
+	public boolean send(AlarmEvent ae, String content);
 }

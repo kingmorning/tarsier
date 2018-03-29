@@ -54,13 +54,13 @@
 		<ref bean="fileSource" />
 		<ref bean="hbSource" />
 	</util:list>
+	<util:list id="alarmProxies">
+		<ref bean="logAlarm" />
+	</util:list>
 	<bean id="fileSource" class="com.tarsier.rule.source.FileSource"></bean>
 	<bean id="hbSource" class="com.tarsier.rule.source.HeartBeatSource"></bean>
 	<!--<bean id="source" class="com.tarsier.rule.source.KafKaSource"></bean> 
 		<bean id="source" class="com.tarsier.rule.source.HttpSource"></bean> -->
-	<!-- mock -->
-	<bean id="alarmSystemProxy"
-		class="com.tarsier.rule.mock.MockAlarmProxy"></bean>
-	<bean id="ruleEngineProxy"
-		class="com.tarsier.rule.mock.MockRuleProxy"></bean>
+	<bean id="logAlarm" class="com.tarsier.rule.proxy.LogAlarmProxy"></bean>
+	<bean id="ruleProxy" class="com.tarsier.rule.mock.MockRuleProxy"></bean>
 </beans>

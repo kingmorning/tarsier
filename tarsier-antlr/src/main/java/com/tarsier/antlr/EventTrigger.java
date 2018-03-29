@@ -55,7 +55,7 @@ public class EventTrigger {
 		}
 	}
 
-	public boolean trigger(Map<String, String> msg, long second) throws EventFilterException {
+	public synchronized boolean trigger(Map<String, String> msg, long second) throws EventFilterException {
 		try {
 			if (groupby != null ) {
 				if(msg != null){

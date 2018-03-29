@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 
 /**
  * 
@@ -70,7 +70,7 @@ public class FileSource extends AbstractSource {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						LOGGER.debug("{}", line);
-						put(new LoggerMsg(line));
+						put(new MsgEvent(line));
 					}
 				}
 			}

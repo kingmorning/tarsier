@@ -10,8 +10,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -20,8 +18,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-public class LogParser {
-	private static final Logger			LOG				= LoggerFactory.getLogger(LogParser.class);
+public class MsgParser {
+	private static final Logger			LOG				= LoggerFactory.getLogger(MsgParser.class);
 	private static final char			decollator		= '=';
 	private static final Set<Character>	terminals		= new HashSet<Character>(Arrays.asList(' ', '\t', '\n'));
 	private static final Type token = new TypeToken<Map<String, String>>(){}.getType();

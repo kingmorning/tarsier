@@ -21,19 +21,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.data.Engine;
-import com.tarsier.rule.data.EngineStatus;
 import com.tarsier.rule.engine.EngineHolder;
 import com.tarsier.rule.engine.RuleHolder;
 import com.tarsier.rule.exception.ExceptionResolver;
 import com.tarsier.rule.service.Application;
-import com.tarsier.rule.service.LogDispatchService;
+import com.tarsier.rule.service.MsgDispatchService;
 import com.tarsier.util.Constant;
 import com.tarsier.util.Rule;
 
@@ -49,7 +47,7 @@ public class HomeController {
 	private static final Logger	LOGGER	= LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
-	private LogDispatchService	service;
+	private MsgDispatchService	service;
 	@Autowired
 	private EngineHolder		engineHolder;
 	@Autowired
@@ -63,9 +61,9 @@ public class HomeController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/lastlog", method = RequestMethod.GET)
+	@RequestMapping(value = "/msg", method = RequestMethod.GET)
 	public ModelAndView lastlog(Model model) {
-		LoggerMsg log = service.getLastlog();
+		MsgEvent log = service.getMsg();
 		String msg = log != null ? JSON.toJSONString(log) : "";
 		model.addAttribute(Constant.RESULT, msg);
 		return new ModelAndView(Constant.TEXT_PAGE);
@@ -174,21 +172,6 @@ public class HomeController {
 	@RequestMapping(value = "/exception", method = RequestMethod.GET)
 	public ModelAndView exception(Model model) {
 		model.addAttribute(Constant.EXCEPTION, ExceptionResolver.ErrorMsg);
-		return new ModelAndView(Constant.TEXT_PAGE);
-	}
-
-	@Deprecated
-	@RequestMapping(value = "/engines/model", method = RequestMethod.GET)
-	public ModelAndView perform(@RequestParam("id")String id,@RequestParam("debug")String debug, Model model) {
-		Set<String> names = engineHolder.getProjectNames();
-		for (String n : names) {
-			Set<Engine> es = engineHolder.getEngines(n);
-			for (Engine r : es) {
-				r.setDebugModel(Boolean.valueOf(debug));
-			}
-		}
-		model.addAttribute(Constant.SUCCESS, Constant.TRUE);
-		model.addAttribute(Constant.RESULT, Boolean.valueOf(debug));
 		return new ModelAndView(Constant.TEXT_PAGE);
 	}
 

@@ -5,16 +5,11 @@
  */
 package com.tarsier.rule.engine;
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.LoadingCache;
-import com.tarsier.data.LoggerMsg;
+import com.tarsier.data.MsgEvent;
 import com.tarsier.rule.data.Engine;
-import com.tarsier.rule.data.EngineStatus;
-import com.tarsier.rule.data.ItemPerform;
 import com.tarsier.util.Constant;
 
 /**
@@ -25,11 +20,11 @@ import com.tarsier.util.Constant;
 public class RunTask implements Runnable {
 
 	private static final Logger	LOGGER	= LoggerFactory.getLogger(RunTask.class);
-	private LoggerMsg			msg;
+	private MsgEvent			msg;
 
 	private Engine				engine;
 
-	public RunTask(LoggerMsg msg, Engine engine) {
+	public RunTask(MsgEvent msg, Engine engine) {
 		this.msg = msg;
 		this.engine = engine;
 	}
@@ -45,44 +40,31 @@ public class RunTask implements Runnable {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(" start to parse log:{}", msg.getMessage());
 			}
-			long start = System.currentTimeMillis();
-			boolean shouldAlarm = false;
-			boolean actuallyAlarm = false;
+			boolean trigger = false;
+			boolean alarmed = false;
 			if (engine.filter(msg)) {
-				shouldAlarm = engine.trigger(msg);
-				if (shouldAlarm) {
+				trigger = engine.trigger(msg);
+				if (trigger) {
 					engine.setStatus(Constant.RED);
-					actuallyAlarm = engine.sendAlarm(msg);
+					alarmed = engine.sendAlarm(msg);
 				}
 			}
-			if (!shouldAlarm) {
+			if (!trigger) {
 				if(engine.getRecover() ==null){
 					engine.setStatus(Constant.GREEN);
 				}
 				else{
-					if(engine.recover(msg)){
-						engine.sendRecover(msg);
+					if(Constant.RED.equalsIgnoreCase(engine.getStatus()) && engine.recover(msg)){
 						engine.setStatus(Constant.GREEN);
+						engine.sendRecover(msg);
 					}
 					else{
 						engine.setStatus(Constant.YELLOW);
 					}
 				}
 			}
-			engine.setLastLog(msg);
-			if (engine.isDebugModel()) {
-				ItemPerform item = new ItemPerform();
-				item.setMsgSize(msg.getMessage().length());
-				long end = System.currentTimeMillis();
-				item.setSpendTime(end - start);
-				item.setAlarm(shouldAlarm);
-				LoadingCache<String,ItemPerform> items = engine.getData();
-				if(items != null){
-					items.put(UUID.randomUUID().toString(), item);
-				}
-			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(" end to parse log. should to alarm:{}, actually alarm:{}", shouldAlarm, actuallyAlarm);
+				LOGGER.debug(" end to parse log. should to alarm:{}, actually alarm:{}", trigger, alarmed);
 			}
 		}
 		catch (Exception efe) {

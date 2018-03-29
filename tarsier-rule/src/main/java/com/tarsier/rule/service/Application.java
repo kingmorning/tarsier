@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.tarsier.rule.engine.EngineHolder;
 import com.tarsier.rule.engine.RuleHolder;
-import com.tarsier.rule.proxy.AlarmSystemProxy;
 import com.tarsier.rule.source.Source;
 
 @Service
@@ -32,9 +31,9 @@ public class Application {
 	@Autowired
 	private List<Source>		sources;
 	@Autowired
-	private LogDispatchService	service;
+	private MsgDispatchService	service;
 	@Autowired
-	private AlarmSystemProxy	alarmService;
+	private AlarmService	alarmService;
 	private Timer				timer;
 	private TimerTask			timerTask;
 

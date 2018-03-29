@@ -16,21 +16,21 @@ import com.tarsier.util.DateUtil;
  * 
  * @author wangchenchina@hotmail.com 2016年1月30日 下午1:54:37
  */
-public class LoggerMsg {
+public class MsgEvent {
 
 	private final Map<String, String> mappedMsg;
 	private final String message;
 	private long time;
 	private final String projectName;
 
-	public LoggerMsg(String msg) {
+	public MsgEvent(String msg) {
 		this.message = msg;
-		this.mappedMsg = LogParser.parse(msg);
+		this.mappedMsg = MsgParser.parse(msg);
 		this.projectName = mappedMsg.get(Constant.PROJECT_NAME);
 		formatTime();
 	}
 
-	public LoggerMsg(String prjectName, long time) {
+	public MsgEvent(String prjectName, long time) {
 		this.projectName = prjectName;
 		this.time = time;
 		mappedMsg = new HashMap<String, String>();
