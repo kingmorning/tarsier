@@ -44,4 +44,4 @@ git clone https://github.com/kingmorning/tarsier.git
 API详情
 [收集器](./tarsier-manager/CollectAPI.md)
 [规则](./tarsier-manager/RuleAPI.md)
-      
+
