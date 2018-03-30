@@ -1,4 +1,4 @@
-** tarsier **
+# tarsier
 
 说明：本系统主要目的是通过配置规则，对接入的数据进行规则匹配。对于符合规则的数据进行预警处理，可以通过邮件、短信、微信等多种方式进行预警。
 
@@ -11,7 +11,7 @@ git clone https://github.com/kingmorning/tarsier.git
    tarsier-manager：规则及收集器管理系统，可以对收集器及规则进行增删改查，Web项目。
    tarsier-rule：规则匹配系统，可启动多个实例，Web项目。
    tarsier-util：通用工具包
-
+   doc: 文档目录，包括创建数据库脚本
 三：修改配置
    1：tarsier-manager/src/main/resource/conf 目录下提供了 对应环境的配置文件，可进行修改
    2：tarsier-rule/src/main/resource/conf 目录下提供了 对应环境的配置文件，可进行修改
@@ -39,9 +39,9 @@ git clone https://github.com/kingmorning/tarsier.git
 
 八：登录tarsier-manager系统，配置对应的收集器和规则即可 使用。
 
+[规则配置项说明](./doc/ruleConfig.pdf)
 
+[收集器API](./doc/CollectAPI.md)
 
-API详情
-[收集器](./tarsier-manager/CollectAPI.md)
-[规则](./tarsier-manager/RuleAPI.md)
+[规则API](./doc/RuleAPI.md)
 
