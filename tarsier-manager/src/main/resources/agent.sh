@@ -2,15 +2,20 @@
 version=16
 if [ ! $COLLECT_HOME ];then
         echo pls set environment COLLECT_HOME.
-        exit 1
+        exit -1
 fi
+if [ $# = 0 ] ; then 
+   echo "pls set tarsier manager host:port as first parameter" 
+   exit -1; 
+fi 
 cd $COLLECT_HOME
 dir=`pwd`
 afile=$dir/after
 bfile=$dir/before
 pfile=$dir/post
-ip=${1:-`/sbin/ip a|grep 'inet '|grep -v 127.0.0.1|awk '{print $2}' | awk -F '/' '{print $1}' |head -n 1`}
-serverURL='http://127.0.0.1:8080/tarsier-manager/api/config'
+managerHostPort=${1}
+ip=${2:-`/sbin/ip a|grep 'inet '|grep -v 127.0.0.1|awk '{print $2}' | awk -F '/' '{print $1}' |head -n 1`}
+serverURL=http://${managerHostPort}/tarsier-manager/api/config
 curl -XPOST -d @post -H 'Content-type: application/json' $serverURL/status?ip=$ip\&id=$COLLECT_ID > $bfile
 function getPID(){
         local tmpid=`ps -ef | grep ${1} | grep -v "grep" | awk '{if(NR==1) print $2}'`

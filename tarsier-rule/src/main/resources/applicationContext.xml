@@ -55,8 +55,6 @@
 	<bean id="ruleEngineProxy" class="com.tarsier.rule.proxy.HttpRuleProxy"></bean>
 <!-- 	<bean id="ruleEngineProxy" class="com.tarsier.rule.proxy.FileRuleProxy"></bean> -->
 	<!-- <bean id="ruleEngineProxy" class="com.tarsier.rule.proxy.DBRuleProxy"></bean> -->
-	<bean id="alarmSystemProxy"
-		class="com.tarsier.rule.proxy.AlarmSystemProxyImpl"></bean>
 
 	<util:list id="sources">
 		<ref bean="kafkaSource" />

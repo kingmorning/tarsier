@@ -36,9 +36,9 @@ public class KafkaAlarmProxy implements AlarmProxy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(KafkaAlarmProxy.class);
 	
-	@Value("${kafka.bootstrap.servers}")
+	@Value("${alarm.kafka.bootstrap.servers}")
 	private String kafkaServers="127.0.0.1:9092";
-	@Value("${kafka.alarm.topic:tarsier_alarm}")
+	@Value("${alarm.kafka.topic:tarsier_alarm}")
 	private String alarmTopic="test";
 	private Producer<String, String> producer=null;
 	

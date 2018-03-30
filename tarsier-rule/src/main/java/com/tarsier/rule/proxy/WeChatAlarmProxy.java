@@ -35,17 +35,17 @@ public class WeChatAlarmProxy implements AlarmProxy {
 	private static final Logger LOG = LoggerFactory.getLogger(WeChatAlarmProxy.class);
 	private CloseableHttpClient wechatClient = null;
 	private String token;
-	@Value("${wechat.url:http://10.214.129.248/zabbix/api_jsonrpc.php}")
-	private String wechatURL = "http://10.214.129.248/zabbix/api_jsonrpc.php";
-	@Value("${wechat.username:weixin_service_alert}")
+	@Value("${wechat.url}")
+	private String wechatURL = "";
+	@Value("${wechat.username:}")
 	private String wechatUsername = "weixin_service_alert";
-	@Value("${wechat.password:weixin_service_alert123}")
+	@Value("${wechat.password}")
 	private String wechatPassword = "weixin_service_alert123";
-	@Value("${wechat.corpid:ww475f3b43a600e946}")
+	@Value("${wechat.corpid}")
 	private String wechatCorpid = "ww475f3b43a600e946";
-	@Value("${wechat.agentid:1000003}")
+	@Value("${wechat.agentid}")
 	private String wechatAgentid = "1000003";
-	@Value("${wechat.appSecret:TCT6FjkveOfaMFmRxdz9vxKs3RgRszhuM_EVQPULf4U}")
+	@Value("${wechat.appSecret}")
 	private String wechatAppSecret = "TCT6FjkveOfaMFmRxdz9vxKs3RgRszhuM_EVQPULf4U";
 
 	public boolean send(AlarmEvent ae, String content) {

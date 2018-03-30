@@ -11,32 +11,25 @@
 	<packaging>war</packaging>
 	<build>
 		<finalName>tarsier-manager</finalName>
-		<resources>
+		<!-- <resources>
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 				<filtering>true</filtering>
 				<excludes>
 					<exclude>conf/**</exclude>
 				</excludes>
-			</resource>
-			<resource>
-				<directory>${basedir}/src/main/resources/conf/${env}</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>*.gz</exclude>
-				</excludes>
 				<includes>
-					<include>**</include>
+					<include>*.sh</include>
 				</includes>
 			</resource>
 			<resource>
 				<directory>${basedir}/src/main/resources/conf/${env}</directory>
 				<filtering>false</filtering>
 				<includes>
-					<include>*.gz</include>
+					<include>**</include>
 				</includes>
 			</resource>
-		</resources>
+		</resources> -->
 	</build>
 	<dependencies>
 		<dependency>

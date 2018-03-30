@@ -10,39 +10,17 @@
 		<module>tarsier-antlr</module>
 		<module>tarsier-rule</module>
 		<module>tarsier-manager</module>
-<!-- 		<module>tarsier-flume</module> -->
+		<!-- <module>tarsier-flume</module> -->
 	</modules>
-<!-- 	<repositories>
-		<repository>
-			<id>central</id>
-			<url>http://maven.intra.xxx.com/nexus/content/groups/public/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>cloudera</id>
-			<url>https://repository.cloudera.com/artifactory/repo/</url>
-		</repository>
-	</repositories> 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>central</id>
-			<name>Maven Plugin Repository</name>
-			<url>http://maven.intra.xxx.com/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>-->
+	<!-- <repositories> <repository> <id>central</id> <url>http://maven.intra.xxx.com/nexus/content/groups/public/</url> 
+		<snapshots> <enabled>true</enabled> </snapshots> <releases> <enabled>true</enabled> 
+		</releases> <layout>default</layout> </repository> <repository> <id>cloudera</id> 
+		<url>https://repository.cloudera.com/artifactory/repo/</url> </repository> 
+		</repositories> <pluginRepositories> <pluginRepository> <id>central</id> 
+		<name>Maven Plugin Repository</name> <url>http://maven.intra.xxx.com/nexus/content/groups/public/</url> 
+		<layout>default</layout> <snapshots> <enabled>false</enabled> </snapshots> 
+		<releases> <updatePolicy>never</updatePolicy> </releases> </pluginRepository> 
+		</pluginRepositories> -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -428,7 +406,7 @@
 				<artifactId>flume-kafka-channel</artifactId>
 				<version>${flume-version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
@@ -449,39 +427,50 @@
 			<id>dev</id>
 			<properties>
 				<env>dev</env>
+				<manager.host.port>172.16.0.90:8080</manager.host.port>
+				<rule.host.port>172.16.0.90:8081</rule.host.port>
 			</properties>
 		</profile>
 		<profile>
 			<id>test</id>
 			<properties>
 				<env>test</env>
+				<manager.host.port>127.0.0.1:8080</manager.host.port>
+				<rule.host.port>127.0.0.1:8081</rule.host.port>
 			</properties>
 		</profile>
 		<profile>
 			<id>beta</id>
 			<properties>
 				<env>beta</env>
+				<manager.host.port>10.10.10.11:8080</manager.host.port>
+				<rule.host.port>10.10.10.11:8081</rule.host.port>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<properties>
 				<env>prod</env>
+				<manager.host.port>10.10.10.10:8080</manager.host.port>
+				<rule.host.port>10.10.10.10:8081</rule.host.port>
 			</properties>
 		</profile>
 	</profiles>
 	<build>
 		<resources>
 			<resource>
+				<directory>${basedir}/src/main/resources/conf/${env}</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**</include>
+				</includes>
+			</resource>
+			<resource>
 				<directory>${basedir}/src/main/resources</directory>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 				<excludes>
 					<exclude>conf/**</exclude>
 				</excludes>
-			</resource>
-			<resource>
-				<directory>${basedir}/src/main/resources/conf/${env}</directory>
-				<filtering>true</filtering>
 				<includes>
 					<include>**</include>
 				</includes>

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,7 +18,6 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tarsier.rule.data.AlarmEvent;
-import com.tarsier.rule.util.RuleUtil;
 import com.tarsier.util.HttpUtils;
 
 /**
@@ -38,17 +35,17 @@ import com.tarsier.util.HttpUtils;
 public class SmsAlarmProxy implements AlarmProxy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SmsAlarmProxy.class);
-	@Value("${sms.max.size:155}")
+	@Value("${sms.max.size}")
 	private int smsMaxsize;
-	@Value("${sms.template.id:254}")
+	@Value("${sms.template.id}")
 	private String templateId;
-	@Value("${sms.device.type:0}")
+	@Value("${sms.device.type}")
 	private String deviceType;
-	@Value("${sms.content.type:0}")
+	@Value("${sms.content.type}")
 	private String contentType;
-	@Value("${sms.valid.time:240}")
+	@Value("${sms.valid.time}")
 	private int validTime; // unit second
-	@Value("${sms.url:http://api.sit.ffan.com/msgcenter/v1/smsOutboxes}")
+	@Value("${sms.url}")
 	private String smsURL;
 	private CloseableHttpClient smsClient = null;
 
